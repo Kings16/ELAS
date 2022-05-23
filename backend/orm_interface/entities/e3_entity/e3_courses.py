@@ -1,5 +1,6 @@
-
-
+from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
+from orm_interface.base import Base
+from sqlalchemy.orm import relationship
 
 
 
@@ -8,14 +9,14 @@ class E3_Courses(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     selected = Column(Boolean)
-    title = Column(String)
+    name = Column(String)
     link = Column(String)
     catalog = Column(String)
     type = Column(String)
-    sws= Column(String) #change to integer
-    num_expected_participants = Column(String) #integer
-    max_participants = Column(String) #integer
-    credit = Column(String) #integer
+    sws= Column(Integer) #change to integer
+    num_expected_participants = Column(Integer) #integer
+    max_participants = Column(Integer) #integer
+    credit = Column(Integer) #integer
     language = Column(String)
     description = Column(String)
     location = Column(String)
@@ -30,17 +31,17 @@ class E3_Courses(Base):
     interesting = Column(String)
     grade_effort = Column(String)
  
-    def __init__(self, selected, title, link, catalog, type, 
+    def __init__(self, selected, name, url, catalog, subject_type, 
                     sws, num_expected_participants, 
                     max_participants, credit,language,
                     description, location, exam_type, time_manual,
                     ausgeschlossen_ingenieurwissenschaften_bachelor,
                     fairness, support, material, fun, comprehensibility, interesting, grade_effort):
         self.selected = selected
-        self.title = title
-        self.link = link
+        self.name = name
+        self.url = url
         self.catalog = catalog
-        self.type = type
+        self.subject_type = subject_type
         self.sws = sws
         self.num_expected_participants = num_expected_participants
         self.max_participants = max_participants
