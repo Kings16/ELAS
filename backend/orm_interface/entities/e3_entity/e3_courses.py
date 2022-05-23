@@ -1,7 +1,5 @@
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
-from orm_interface.base import Base
-from sqlalchemy.orm import relationship
+
 
 
 
@@ -14,10 +12,10 @@ class E3_Courses(Base):
     link = Column(String)
     catalog = Column(String)
     type = Column(String)
-    sws= Column(String)
-    num_expected_participants = Column(String)
-    max_participants = Column(String)
-    credit = Column(String)
+    sws= Column(String) #change to integer
+    num_expected_participants = Column(String) #integer
+    max_participants = Column(String) #integer
+    credit = Column(String) #integer
     language = Column(String)
     description = Column(String)
     location = Column(String)

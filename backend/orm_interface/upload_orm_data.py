@@ -14,6 +14,7 @@ backend_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."
 DATA_DIRECTORY = os.path.abspath(os.path.join(backend_directory, "scrapers", "merged_data.json"))
 STUDYPROGRAMS_DIRECTORY = os.path.abspath(os.path.join(backend_directory, "scrapers", "study_programs.json"))
 E3_COURSES = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.json"))
+CLEAN_FILE = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.json"))
 
 Base.metadata.create_all(engine)
 session = Session()
@@ -163,7 +164,7 @@ class Uploader:
 
 
 
-    #####sample++++
+    #####This method is used the populate the E3 table with the scrapped data
     def upload_e3_courses(self):
         self.delete_all_e3_courses()
 
@@ -230,6 +231,18 @@ class Uploader:
             session.rollback()
         finally:
             session.close()
+            ## Delete the e3_course.json file if it exists
+            try:
+                os.remove(CLEAN_FILE)
+            except FileNotFoundError:
+                print("File Does not exist")
+
+    
+
+
+
+
+
         
         
 

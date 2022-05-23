@@ -53,8 +53,12 @@ def run(config, insight_url, e3_url):
     merge_script.run()
 
     # 4. upload all the data to the database
+    ##uploader = Uploader()
+    ##uploader.upload_data()
     uploader = Uploader()
     uploader.upload_data()
+    #this method is taken to the end of the page to ensure that both scrapping processess are complete
+    #before any attempt to wipe and replace the data in the database.
 
     # 5. define temp files for e3 courses and ratings files
     temp_e3 = os.path.abspath(os.path.join(backend_directory, config['temp_e3_directory']))
@@ -63,6 +67,7 @@ def run(config, insight_url, e3_url):
 
     course_scraper_directory = os.path.abspath(os.path.join(backend_directory, config["courseScraper"]))
     ratings_scraper_directory = os.path.abspath(os.path.join(backend_directory, config["ratingsScraper"]))
+    clean_e3_courses = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses"))
 
     clean_files([temp_e3, temp_ratings_raw, temp_ratings])
 
@@ -88,26 +93,33 @@ def run(config, insight_url, e3_url):
     e3_processed, avg_ratings = process_e3(e3_courses, ratings)
 
     e3_target_file = os.path.abspath(os.path.join(backend_directory, config["e3TargetFile"]))
-    with open(e3_target_file, "w") as file:
+    with open(e3_target_file, "w+") as file:
         file.write(json.dumps(e3_processed))
 
     e3_ratings_file = os.path.abspath(os.path.join(backend_directory, config["e3RatingsFile"]))
-    with open(e3_ratings_file, "w") as file:
+    with open(e3_ratings_file, "w+") as file:
         file.write(json.dumps(avg_ratings))
 
     ########Trying to read and save avg_ratings
+    #upload the data to the db.
+   
     uploader.upload_e3_courses()
     
     # 10. remove temp files
-    os.remove(temp_e3)
-    os.remove(temp_ratings)
-    os.remove(temp_ratings_raw)
+    try:
+        os.remove(temp_e3)
+        os.remove(temp_ratings)
+        os.remove(temp_ratings_raw)
+        os.remove(clean_e3_courses)
+    except FileNotFoundError:
+        print("File was no found")
+
 
     clean_files([lsf_data, lsf_data_post_processed, vdb_data, vdb_data_post_processed, merged_data_directory, study_programs_json])
 
     # 11. update statusMessage in config
     config["statusMessage"] = datetime.now().strftime("%Y-%m-%d %H:%M")
-    with open(os.path.join(os.path.dirname(__file__), "config.yaml"), "w") as file:
+    with open(os.path.join(os.path.dirname(__file__), "config.yaml"), "w+") as file:
         file.write(yaml.dump(config))
 
 
@@ -339,3 +351,9 @@ if __name__ == "__main__":
 
     run(config, "https://campus.uni-due.de/lsf/rds?state=wtree&search=1&trex=step&root120212=288350%7C292081%7C290850&P.vx=kurz",
         "https://campus.uni-due.de/lsf/rds?state=wtree&search=1&trex=step&root120211=280741%7C276221%7C276682&P.vx=kurz")
+
+
+
+
+
+

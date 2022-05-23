@@ -1,4 +1,5 @@
 from crypt import methods
+from distutils.command.upload import upload
 import json
 from pickle import GET
 from urllib import response
@@ -88,11 +89,16 @@ def scrape():
     return ""
 
 
-# @main.route('/e3_selector', methods=[ 'GET'])
-# def scrape_e3():
-#     upload = Uploader()
-#     upload.upload_e3_courses()
-#     return "Success"
+@main.route('/e3_selector', methods=[ 'GET'])
+def scrape_e3():
+    try:
+        upload = Uploader()
+        #upload.upload_e3_courses() 
+        upload.delete_all_e3_courses   
+        return "Success"
+
+    except:
+        return "Error"
 
 # @main.route('/fetch_e3_data', methods=['GET'])
 # def fetch_data():
@@ -104,6 +110,8 @@ def scrape():
 #         response.append({"test": beschreibung})
 
 #     return jsonify(response)
+
+
     
    
 

@@ -20,7 +20,7 @@ import { muiStyles } from "../res/muiStyles";
 import DataHandler from "../DataHandler";
 
 export default function ProgramSelection(props) {
-	// List of currently supported stufy programs!
+	// List of currently supported study programs!
 	// The selected one gets its filter set to false
 	const studyPrograms = [
 	    "Angewandte Informatik",
