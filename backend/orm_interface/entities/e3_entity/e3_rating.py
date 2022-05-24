@@ -4,16 +4,16 @@ from sqlalchemy.orm import relationship
 
 
 class E3_Rating(Base):
- __tablename__ = "e3_rating"
- id = Column(Integer, primary_key=True, autoincrement=True)
- fairness = Column(Float)
- support = Column(Float)
- material = Column(Float)
- fun = Column(Float)
- comprehensibility = Column(Float)
- interesting = Column(Float)
- grade_effort = Column(Float)
- e3_course_id = Column(Integer, ForeignKey('e3_courses.id'))
+   __tablename__ = "e3_rating"
+   id = Column(Integer, primary_key=True, autoincrement=True)
+   fairness = Column(Float)
+   support = Column(Float)
+   material = Column(Float)
+   fun = Column(Float)
+   comprehensibility = Column(Float)
+   interesting = Column(Float)
+   grade_effort = Column(Float)
+   e3_course_id = Column(Integer, ForeignKey('e3_courses.id'))
 
  def __init__(self, fairness, support, 
     material, fun, comprehensibility, 
