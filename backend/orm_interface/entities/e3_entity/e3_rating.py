@@ -13,10 +13,11 @@ class E3_Rating(Base):
  comprehensibility = Column(String)
  interesting = Column(String)
  grade_effort = Column(String)
+ e3_rating_id = Column(Integer, ForeignKey('e3_courses.id'))
 
  def __init__(self, fairness, support, 
     material, fun, comprehensibility, 
-    interesting, grade_effort):
+    interesting, grade_effort, e3_rating_id):
 
     self.fairness = fairness
     self.support = support
@@ -25,3 +26,4 @@ class E3_Rating(Base):
     self.comprehensibility = comprehensibility
     self.interesting = interesting
     self.grade_effort = grade_effort
+    e3_rating_id = e3_rating_id

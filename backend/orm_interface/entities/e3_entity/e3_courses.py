@@ -3,6 +3,11 @@
 
 
 
+from sqlalchemy import Column, Integer,String, Boolean
+
+from base import Base
+
+
 class E3_Courses(Base):
     __tablename__ = "e3_courses"
 
@@ -12,10 +17,10 @@ class E3_Courses(Base):
     link = Column(String)
     catalog = Column(String)
     type = Column(String)
-    sws= Column(String) #change to integer
-    num_expected_participants = Column(String) #integer
-    max_participants = Column(String) #integer
-    credit = Column(String) #integer
+    sws= Column(String) 
+    num_expected_participants = Column(String) 
+    max_participants = Column(String)
+    credit = Column(String)
     language = Column(String)
     description = Column(String)
     location = Column(String)
@@ -34,8 +39,8 @@ class E3_Courses(Base):
                     sws, num_expected_participants, 
                     max_participants, credit,language,
                     description, location, exam_type, time_manual,
-                    ausgeschlossen_ingenieurwissenschaften_bachelor,
-                    fairness, support, material, fun, comprehensibility, interesting, grade_effort):
+                    ausgeschlossen_ingenieurwissenschaften_bachelor
+                   ):
         self.selected = selected
         self.title = title
         self.link = link
@@ -51,10 +56,4 @@ class E3_Courses(Base):
         self.exam_type = exam_type
         self.time_manual = time_manual
         self.ausgeschlossen_ingenieurwissenschaften_bachelor = ausgeschlossen_ingenieurwissenschaften_bachelor
-        self.fairness = fairness
-        self.support = support
-        self.material = material
-        self.fun = fun
-        self.comprehensibility = comprehensibility
-        self.interesting = interesting
-        self.grade_effort = grade_effort
+        
