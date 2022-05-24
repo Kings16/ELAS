@@ -14,10 +14,10 @@ class E3_Courses(Base):
     url = Column(String)
     catalog = Column(String)
     type = Column(String)
-    sws= Column(Integer) #change to integer
-    num_expected_participants = Column(Integer) #integer
-    max_participants = Column(Integer) #integer
-    credit = Column(Integer) #integer
+    sws= Column(Integer) 
+    num_expected_participants = Column(Integer) 
+    max_participants = Column(Integer) 
+    credit = Column(Integer) 
     language = Column(String)
     description = Column(String)
     location = Column(String)
