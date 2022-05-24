@@ -1,5 +1,10 @@
+from asyncio import constants
+from gettext import Catalog
 import json
 import io
+from this import s
+from tkinter.tix import INTEGER
+from xmlrpc.client import Boolean, boolean
 from orm_interface.entities.e3_entity.e3_courses import E3_Courses
 from orm_interface.entities.lecture import Lecture
 from orm_interface.entities.studyprogram import StudyProgram
@@ -8,7 +13,7 @@ from orm_interface.entities.timetable import Timetable
 from orm_interface.base import Base, Session, engine
 import datetime
 import os
-
+import re
 backend_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 DATA_DIRECTORY = os.path.abspath(os.path.join(backend_directory, "scrapers", "merged_data.json"))
@@ -18,6 +23,12 @@ CLEAN_FILE = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.
 
 Base.metadata.create_all(engine)
 session = Session()
+
+
+default_num_part = 0
+default_sws = 0
+default_credit = 0
+
 
 class Uploader:
     def delete_all_lectures(self):
@@ -169,39 +180,53 @@ class Uploader:
         self.delete_all_e3_courses()
 
         with open(E3_COURSES, 'r', encoding='utf8') as e3_courses:
-            courses = json.load(e3_courses)
+            e3_courses = json.load(e3_courses)
 
-            for course in courses:
-                selected = course["selected"] 
-                title = course["Title"]   
-                link = course["Link"]    
-                catalog = course["catalog"] 
-                type = course["Type"]   
-                sws = course["SWS"]    
-                num_part = course["Erwartete Teilnehmer"]    
-                max_part = course["Max. Teilnehmer"]    
-                credit = course["Credits"]    
-                language = course["Language"]    
-                description = course["Description"]    
-                location = course["Location"]    
-                exam_type = course["Exam"]    
-                time_manual = course["Times_manual"]    
-                aus_ing_bach = course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
-                fairness = course["fairness"]    
-                support = course["support"]    
-                material = course["material"]    
-                fun = course["fun"]    
-                comprehensibility = course["comprehensibility"]    
-                interesting = course["interesting"]    
-                grade_effort = course["grade_effort"]    
+            for e3_course in e3_courses:
+                selected = e3_course["selected"] 
+                name = e3_course["Title"]   
+                url = e3_course["Link"]    
+                catalog = e3_course["catalog"] 
+                subject_type = e3_course["Type"]   
+                sws = e3_course["SWS"]    
+                num_part = e3_course["Erwartete Teilnehmer"]    
+                max_part = e3_course["Max. Teilnehmer"]    
+                credit = e3_course["Credits"]    
+                language = e3_course["Language"]    
+                description = e3_course["Description"]    
+                location = e3_course["Location"]    
+                exam_type = e3_course["Exam"]    
+                time_manual = e3_course["Times_manual"]    
+                aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
+                fairness = e3_course["fairness"]    
+                support = e3_course["support"]    
+                material = e3_course["material"]    
+                fun = e3_course["fun"]    
+                comprehensibility = e3_course["comprehensibility"]    
+                interesting = e3_course["interesting"]    
+                grade_effort = e3_course["grade_effort"]    
                 
 
+#### Checking if data and datatype is correct:
+                if type(num_part) != INTEGER:
+                    if re.match("\D*",num_part ):
+                        num_part = default_num_part
+                if type(sws) != INTEGER:
+                    if re.match("\D*", sws ):
+                        sws = default_sws
+                if type(credit) != INTEGER:
+                    if re.match("\D*", credit ):
+                        credit = default_credit
+                
+
+
+                    
                 temp_e3 = E3_Courses(
                     selected=selected,
-                    title=title,
-                    link=link,
+                    name=name,
+                    url=url,
                     catalog=catalog,
-                    type=type,
+                    subject_type=subject_type,
                     sws=sws,
                     num_expected_participants=num_part,
                     max_participants=max_part,
