@@ -208,15 +208,15 @@ class Uploader:
                 
 
 #### Checking if data and datatype is correct:
-                if type(num_part) != INTEGER:
-                    if re.match("\D*",num_part ):
-                        num_part = default_num_part
-                if type(sws) != INTEGER:
-                    if re.match("\D*", sws ):
-                        sws = default_sws
-                if type(credit) != INTEGER:
-                    if re.match("\D*", credit ):
-                        credit = default_credit
+                # if type(num_part) != INTEGER:
+                #     if re.match("\D*",num_part ):
+                #         num_part = default_num_part
+                # if type(sws) != INTEGER:
+                #     if re.match("\D*", sws ):
+                #         sws = default_sws
+                # if type(credit) != INTEGER:
+                #     if re.match("\D*", credit ):
+                #         credit = default_credit
                 
 
 
@@ -237,13 +237,7 @@ class Uploader:
                     exam_type=exam_type,
                     time_manual=time_manual,
                     ausgeschlossen_ingenieurwissenschaften_bachelor=aus_ing_bach,
-                    fairness=fairness,
-                    support=support,
-                    material=material,
-                    fun=fun,
-                    comprehensibility=comprehensibility,
-                    interesting=interesting,
-                    grade_effort=grade_effort
+                
             
                 )
                 session.add(temp_e3)
