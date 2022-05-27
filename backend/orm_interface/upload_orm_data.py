@@ -43,25 +43,34 @@ class Uploader:
             session.delete(study_program)
         session.commit()
 
-    #newly added method
+    #newly added method to clear the contents of e3_courses table and rating table
     def delete_all_e3_courses(self):
+        self.delete_e3_rating()
         all_e3_courses = session.query(E3_Courses).all()
         for e3_courses in all_e3_courses:
             session.delete(e3_courses)
         session.commit()
 
+    def delete_e3_rating(self):
+        all_ratings = session.query(E3_Rating).all()
+        for rating in all_ratings:
+            session.delete(rating)
+        session.commit()
+
+
 
     def upload_courses(self):
+        self.delete_all_e3_courses()
         with io.open(E3_COURSES, 'r', encoding='utf8') as temp_e3_courses:
             
                 json_e3_courses = json.load(temp_e3_courses)
-        #Elemente für Exportieren nach DB aus Jsondatei vorbereiten
+        #preparing the data to be persisted to the database
         for e3_course in json_e3_courses:
                 selected = e3_course["selected"] 
                 name = e3_course["Title"]   
                 url = e3_course["Link"]    
                 catalog = e3_course["catalog"] 
-                subject_type = e3_course["Type"]   
+                type = e3_course["Type"]   
                 sws = e3_course["SWS"]    
                 num_part = e3_course["Erwartete Teilnehmer"]    
                 max_part = e3_course["Max. Teilnehmer"]    
@@ -73,13 +82,13 @@ class Uploader:
                 time_manual = e3_course["Times_manual"]    
                 aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
                
-                #Db element erstellen
+                #The data is being laoded for commit
                 e3_course_db = E3_Courses(
                     selected,
                     name,
                     url,
                     catalog,
-                    subject_type,
+                    type,
                     sws,
                     num_part,
                     max_part,
@@ -93,18 +102,38 @@ class Uploader:
                 
 
                 )
-                #exportieren nach DB
+                #add the e3Course data to the session for a future commit
                 session.add(e3_course_db)
-                #dieses Schritt ist gewollt, damit wir Id von DatenBank bekommen
+                #We performed this step in order to get the id of the e3courses
                 session.flush()
-                #2te teil von json datei vorbereiten , nach DB zu exportieren
+                
                 fairness = e3_course["fairness"]    
                 support = e3_course["support"]    
                 material = e3_course["material"]    
                 fun = e3_course["fun"]    
                 comprehensibility = e3_course["comprehensibility"]    
                 interesting = e3_course["interesting"]    
-                grade_effort = e3_course["grade_effort"] 
+                grade_effort = e3_course["grade_effort"]
+
+                ##The scrapping algorithm return float and an empty string incase the float value is 0.
+                #The scrapping api has to be make better to store only float numbers
+                if fairness == "":
+                    fairness = 0.0
+                if support == "":
+                    support = 0.0
+                if material == "":
+                    material = 0.0
+                if fun == "":
+                    fun = 0.0
+                if comprehensibility == "":
+                    comprehensibility = 0.0
+                if interesting == "":
+                    interesting = 0.0
+                if grade_effort == "":
+                    grade_effort = 0.0
+        
+
+
                 e3_Rating_db = E3_Rating(
                     fairness = fairness,
                     support = support,
@@ -119,12 +148,6 @@ class Uploader:
                 
         temp_e3_courses.close()
        
-               
-     
-        
-      
-
-
         try:
             session.commit()
         except Exception as e :
@@ -133,10 +156,10 @@ class Uploader:
         finally:
             session.close()
             ## Delete the e3_course.json file if it exists
-            try:
-                os.remove(E3_COURSES)
-            except FileNotFoundError:
-                print("File Does not exist")
+            # try:
+            #     os.remove(E3_COURSES)
+            # except FileNotFoundError:
+            #     print("File Does not exist")
 
     def upload_data(self):
         self.delete_all_lectures()

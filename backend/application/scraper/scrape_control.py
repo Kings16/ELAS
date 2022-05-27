@@ -103,7 +103,7 @@ def run(config, insight_url, e3_url):
     ########Trying to read and save avg_ratings
     #upload the data to the db.
    
-    uploader.upload_e3_courses()
+    uploader.upload_courses()
     
     # 10. remove temp files
     try:

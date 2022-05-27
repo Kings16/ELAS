@@ -3,7 +3,6 @@ from distutils.command.upload import upload
 import json
 from pickle import GET
 from urllib import response
-from orm_interface.entities.e3_entity.e3_courses import E3_Courses
 from orm_interface.upload_orm_data import Uploader
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
@@ -91,14 +90,9 @@ def scrape():
 
 @main.route('/e3_selector', methods=[ 'GET'])
 def scrape_e3():
-    try:
         upload = Uploader()
-        #upload.upload_e3_courses() 
-        upload.delete_all_e3_courses   
+        upload.upload_courses()  
         return "Success"
-
-    except:
-        return "Error"
 
 # @main.route('/fetch_e3_data', methods=['GET'])
 # def fetch_data():

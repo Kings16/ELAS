@@ -48,7 +48,9 @@ class E3_Courses(Base):
     time_manual = Column(String)
     ausgeschlossen_ingenieurwissenschaften_bachelor = Column(String)
     e3_rating = relationship(E3_Rating, backref="e3_courses")
-    def __init__(self, selected, name, url, catalog, subject_type, 
+
+    
+    def __init__(self, selected, name, url, catalog, type, 
                 sws, num_expected_participants, 
                 max_participants, credit,language,
                 description, location, exam_type, time_manual,
@@ -57,7 +59,7 @@ class E3_Courses(Base):
          self.name = name
          self.url = url
          self.catalog = catalog
-         self.subject_type = subject_type
+         self.type = type
          self.sws = sws
          self.num_expected_participants = num_expected_participants
          self.max_participants = max_participants
