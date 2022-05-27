@@ -91,22 +91,9 @@ def scrape():
 @main.route('/e3_selector', methods=[ 'GET'])
 def scrape_e3():
         upload = Uploader()
-        upload.upload_courses()  
+        upload.upload_courses() 
         return "Success"
 
-# @main.route('/fetch_e3_data', methods=['GET'])
-# def fetch_data():
-#     e3_data = session.query(E3_Courses).all()
-#     response = []
 
-#     for data in e3_data:
-#         beschreibung = data.title
-#         response.append({"test": beschreibung})
-
-#     return jsonify(response)
-
-
-    
-   
 
 

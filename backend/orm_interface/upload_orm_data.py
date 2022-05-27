@@ -18,7 +18,8 @@ E3_COURSES = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.
 Base.metadata.create_all(engine)
 session = Session()
 
-class Uploader:
+class Uploader:    
+      
     def delete_all_lectures(self):
         all_lectures = session.query(Lecture).all()
         for lecture in all_lectures:
@@ -129,7 +130,7 @@ class Uploader:
                     fun = 0.0
                 if comprehensibility == "":
                     comprehensibility = 0.0
-                    
+
                 if interesting == "":
                     interesting = 0.0
                 if grade_effort == "":
@@ -159,10 +160,10 @@ class Uploader:
         finally:
             session.close()
             ## Delete the e3_course.json file if it exists
-            # try:
-            #     os.remove(E3_COURSES)
-            # except FileNotFoundError:
-            #     print("File Does not exist")
+            try:
+                open(E3_COURSES, "w").close()
+            except FileNotFoundError:
+                 print("File Does not exist")
 
     def upload_data(self):
         self.delete_all_lectures()
