@@ -1,11 +1,6 @@
-from asyncio import constants
-from gettext import Catalog
 import json
 import io
-from this import s
-from tkinter.tix import INTEGER
-from xmlrpc.client import Boolean, boolean
-from orm_interface.entities.e3_entity.e3_courses import E3_Courses
+from orm_interface.entities.e3_entity.e3_courses import E3_Courses, E3_Rating
 from orm_interface.entities.lecture import Lecture
 from orm_interface.entities.studyprogram import StudyProgram
 from orm_interface.entities.professor import Professor
@@ -13,22 +8,15 @@ from orm_interface.entities.timetable import Timetable
 from orm_interface.base import Base, Session, engine
 import datetime
 import os
-import re
+
 backend_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 DATA_DIRECTORY = os.path.abspath(os.path.join(backend_directory, "scrapers", "merged_data.json"))
 STUDYPROGRAMS_DIRECTORY = os.path.abspath(os.path.join(backend_directory, "scrapers", "study_programs.json"))
 E3_COURSES = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.json"))
-CLEAN_FILE = os.path.abspath(os.path.join(backend_directory, "bin", "e3_courses.json"))
 
 Base.metadata.create_all(engine)
 session = Session()
-
-
-default_num_part = 0
-default_sws = 0
-default_credit = 0
-
 
 class Uploader:
     def delete_all_lectures(self):
@@ -62,13 +50,99 @@ class Uploader:
             session.delete(e3_courses)
         session.commit()
 
+
+    def upload_courses(self):
+        with io.open(E3_COURSES, 'r', encoding='utf8') as temp_e3_courses:
+            
+                json_e3_courses = json.load(temp_e3_courses)
+        #Elemente für Exportieren nach DB aus Jsondatei vorbereiten
+        for e3_course in json_e3_courses:
+                selected = e3_course["selected"] 
+                name = e3_course["Title"]   
+                url = e3_course["Link"]    
+                catalog = e3_course["catalog"] 
+                subject_type = e3_course["Type"]   
+                sws = e3_course["SWS"]    
+                num_part = e3_course["Erwartete Teilnehmer"]    
+                max_part = e3_course["Max. Teilnehmer"]    
+                credit = e3_course["Credits"]    
+                language = e3_course["Language"]    
+                description = e3_course["Description"]    
+                location = e3_course["Location"]    
+                exam_type = e3_course["Exam"]    
+                time_manual = e3_course["Times_manual"]    
+                aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
+               
+                #Db element erstellen
+                e3_course_db = E3_Courses(
+                    selected,
+                    name,
+                    url,
+                    catalog,
+                    subject_type,
+                    sws,
+                    num_part,
+                    max_part,
+                    credit,
+                    language,
+                    description,
+                    location,
+                    exam_type,
+                    time_manual,
+                    aus_ing_bach
+                
+
+                )
+                #exportieren nach DB
+                session.add(e3_course_db)
+                #dieses Schritt ist gewollt, damit wir Id von DatenBank bekommen
+                session.flush()
+                #2te teil von json datei vorbereiten , nach DB zu exportieren
+                fairness = e3_course["fairness"]    
+                support = e3_course["support"]    
+                material = e3_course["material"]    
+                fun = e3_course["fun"]    
+                comprehensibility = e3_course["comprehensibility"]    
+                interesting = e3_course["interesting"]    
+                grade_effort = e3_course["grade_effort"] 
+                e3_Rating_db = E3_Rating(
+                    fairness = fairness,
+                    support = support,
+                    material = material,
+                    fun = fun,
+                    comprehensibility = comprehensibility,
+                    interesting = interesting,
+                    grade_effort = grade_effort,
+                    e3_course_id=e3_course_db.id)
+             
+                session.add(e3_Rating_db)
+                
+        temp_e3_courses.close()
+       
+               
+     
+        
+      
+
+
+        try:
+            session.commit()
+        except Exception as e :
+            print(str(e))
+            session.rollback()
+        finally:
+            session.close()
+            ## Delete the e3_course.json file if it exists
+            try:
+                os.remove(E3_COURSES)
+            except FileNotFoundError:
+                print("File Does not exist")
+
     def upload_data(self):
         self.delete_all_lectures()
         self.delete_all_timetables()
         self.delete_all_professors()
         self.delete_all_studyprograms()
-        
-
         professors_dict = {}
         studyprograms_dict = {}
 
@@ -78,6 +152,7 @@ class Uploader:
                 if studyprogram['id'] not in studyprograms_dict.keys():
                     studyprograms_dict[studyprogram['id']] = StudyProgram(studyprogram['id'], studyprogram['name'],
                                                                           studyprogram['url'])
+            
             studyprograms_data.close()
 
         with io.open(DATA_DIRECTORY, 'r', encoding='utf8') as data_file:
@@ -175,94 +250,4 @@ class Uploader:
 
 
 
-    #####This method is used the populate the E3 table with the scrapped data
-    def upload_e3_courses(self):
-        self.delete_all_e3_courses()
-
-        with open(E3_COURSES, 'r', encoding='utf8') as e3_courses:
-            e3_courses = json.load(e3_courses)
-
-            for e3_course in e3_courses:
-                selected = e3_course["selected"] 
-                name = e3_course["Title"]   
-                url = e3_course["Link"]    
-                catalog = e3_course["catalog"] 
-                subject_type = e3_course["Type"]   
-                sws = e3_course["SWS"]    
-                num_part = e3_course["Erwartete Teilnehmer"]    
-                max_part = e3_course["Max. Teilnehmer"]    
-                credit = e3_course["Credits"]    
-                language = e3_course["Language"]    
-                description = e3_course["Description"]    
-                location = e3_course["Location"]    
-                exam_type = e3_course["Exam"]    
-                time_manual = e3_course["Times_manual"]    
-                aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
-                fairness = e3_course["fairness"]    
-                support = e3_course["support"]    
-                material = e3_course["material"]    
-                fun = e3_course["fun"]    
-                comprehensibility = e3_course["comprehensibility"]    
-                interesting = e3_course["interesting"]    
-                grade_effort = e3_course["grade_effort"]    
-                
-
-#### Checking if data and datatype is correct:
-                # if type(num_part) != INTEGER:
-                #     if re.match("\D*",num_part ):
-                #         num_part = default_num_part
-                # if type(sws) != INTEGER:
-                #     if re.match("\D*", sws ):
-                #         sws = default_sws
-                # if type(credit) != INTEGER:
-                #     if re.match("\D*", credit ):
-                #         credit = default_credit
-                
-
-
-                    
-                temp_e3 = E3_Courses(
-                    selected=selected,
-                    name=name,
-                    url=url,
-                    catalog=catalog,
-                    subject_type=subject_type,
-                    sws=sws,
-                    num_expected_participants=num_part,
-                    max_participants=max_part,
-                    credit=credit,
-                    language=language,
-                    description=description,
-                    location=location,
-                    exam_type=exam_type,
-                    time_manual=time_manual,
-                    ausgeschlossen_ingenieurwissenschaften_bachelor=aus_ing_bach,
-                
-            
-                )
-                session.add(temp_e3)
-                
-
-            e3_courses.close()
-        try:
-            session.commit()
-        except:
-            session.rollback()
-        finally:
-            session.close()
-            ## Delete the e3_course.json file if it exists
-            try:
-                os.remove(CLEAN_FILE)
-            except FileNotFoundError:
-                print("File Does not exist")
-
     
-
-
-
-
-
-        
-        
-
-
