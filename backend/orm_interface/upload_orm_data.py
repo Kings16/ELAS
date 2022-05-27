@@ -119,14 +119,17 @@ class Uploader:
                 #The scrapping api has to be make better to store only float numbers
                 if fairness == "":
                     fairness = 0.0
+
                 if support == "":
                     support = 0.0
+
                 if material == "":
                     material = 0.0
                 if fun == "":
                     fun = 0.0
                 if comprehensibility == "":
                     comprehensibility = 0.0
+                    
                 if interesting == "":
                     interesting = 0.0
                 if grade_effort == "":
