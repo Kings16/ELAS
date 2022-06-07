@@ -45,7 +45,7 @@ class E3_Courses(Base):
     description = Column(String)
     location = Column(String)
     exam_type = Column(String)
-    time_manual = Column(String)
+    timetables = Column(String)
     ausgeschlossen_ingenieurwissenschaften_bachelor = Column(String)
     e3_rating = relationship(E3_Rating, backref="e3_courses")
 
@@ -64,9 +64,9 @@ class E3_Courses(Base):
          self.num_expected_participants = num_expected_participants
          self.max_participants = max_participants
          self.credit = credit
-         self.lanDguage = language
+         self.language = language
          self.description = description
          self.location = location
          self.exam_type = exam_type
-         self.time_manual = time_manual
+         self.timetables = time_manual
          self.ausgeschlossen_ingenieurwissenschaften_bachelor = ausgeschlossen_ingenieurwissenschaften_bachelor

@@ -80,7 +80,7 @@ class Uploader:
                 description = e3_course["Description"]    
                 location = e3_course["Location"]    
                 exam_type = e3_course["Exam"]    
-                time_manual = e3_course["Times_manual"]    
+                timetables = e3_course["Times_manual"]    
                 aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
                
                 #The data is being laoded for commit
@@ -98,7 +98,7 @@ class Uploader:
                     description,
                     location,
                     exam_type,
-                    time_manual,
+                    timetables,
                     aus_ing_bach
                 
 

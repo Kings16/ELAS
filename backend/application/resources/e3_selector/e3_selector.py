@@ -2,7 +2,7 @@ import os
 import csv
 from orm_interface.base import Session
 from orm_interface.entities.e3_entity.e3_courses import E3_Courses, E3_Rating
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from orm_interface.base import Base, Session, engine
 
 

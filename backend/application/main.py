@@ -89,9 +89,12 @@ def scrape():
     return ""
 
 
-# @main.route('/e3_selector', methods=[ 'GET'])
-# def scrape_e3():
-#         return "Hi hi hi"
+@main.route('/e3_selector', methods=[ 'GET'])
+def scrape_e3():
+        upload = Uploader()
+        upload.upload_courses()
+        return "success"
+
 
 # @main.route('/fetch_e3_data', methods=['GET'])
 # def fetch_data():
@@ -128,7 +131,7 @@ def gete3course():
             "Credits" : e3course.credit,
             "Language" : e3course.language,
             "Description" :e3course.description,
-            "Times_manual" :e3course.time_manual,
+            "Times_manual" :e3course.timetables,
             "Location" :e3course.location ,
             "Exam" :  e3course.exam_type,
             "Ausgeschlossen_Ingenieurwissenschaften_Bachelor" : e3course.ausgeschlossen_ingenieurwissenschaften_bachelor,
