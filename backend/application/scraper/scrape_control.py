@@ -53,12 +53,11 @@ def run(config, insight_url, e3_url):
     merge_script.run()
 
     # 4. upload all the data to the database
-    ##uploader = Uploader()
+   
     ##uploader.upload_data()
     uploader = Uploader()
     uploader.upload_data()
-    #this method is taken to the end of the page to ensure that both scrapping processess are complete
-    #before any attempt to wipe and replace the data in the database.
+    
 
     # 5. define temp files for e3 courses and ratings files
     temp_e3 = os.path.abspath(os.path.join(backend_directory, config['temp_e3_directory']))
@@ -100,9 +99,8 @@ def run(config, insight_url, e3_url):
     with open(e3_ratings_file, "w+") as file:
         file.write(json.dumps(avg_ratings))
 
-    ########Trying to read and save avg_ratings
-    #upload the data to the db.
-   
+    ########
+    #upload the e3 courses scrapped data to the database
     uploader.upload_courses()
     
     # 10. remove temp files

@@ -161,7 +161,9 @@ class Uploader:
             session.close()
             ## Delete the e3_course.json file if it exists
             try:
-                open(E3_COURSES, "w").close()
+                #open(E3_COURSES, "w").close()
+                #os.remove(E3_COURSES)
+                print("Ja")
             except FileNotFoundError:
                  print("File Does not exist")
 

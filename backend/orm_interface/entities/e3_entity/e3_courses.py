@@ -64,7 +64,7 @@ class E3_Courses(Base):
          self.num_expected_participants = num_expected_participants
          self.max_participants = max_participants
          self.credit = credit
-         self.language = language
+         self.lanDguage = language
          self.description = description
          self.location = location
          self.exam_type = exam_type

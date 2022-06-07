@@ -3,6 +3,7 @@ from distutils.command.upload import upload
 import json
 from pickle import GET
 from urllib import response
+from orm_interface.entities.e3_entity.e3_courses import E3_Courses, E3_Rating
 from orm_interface.upload_orm_data import Uploader
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
@@ -88,12 +89,65 @@ def scrape():
     return ""
 
 
-@main.route('/e3_selector', methods=[ 'GET'])
-def scrape_e3():
-        upload = Uploader()
-        upload.upload_courses() 
-        return "Success"
+# @main.route('/e3_selector', methods=[ 'GET'])
+# def scrape_e3():
+#         return "Hi hi hi"
+
+# @main.route('/fetch_e3_data', methods=['GET'])
+# def fetch_data():
+#     e3_data = session.query(E3_Courses).all()
+#     response = []
+
+#     for data in e3_data:
+#         beschreibung = data.title
+#         response.append({"test": beschreibung})
+
+#     return jsonify(response)
 
 
+@main.route("/e3_courses_and_rating", methods=['GET'])
+def gete3course():
+        #get all courses from database
+ 
+    docs = session.query(E3_Courses).join(E3_Rating).all()
+ 
+    response= []
+    #get all the data from data base with join ! 
+    for e3course in docs:
+        for e3rating in e3course.e3_rating:
+  
+          response.append({
+            "selected": e3course.selected,
+            "Title": e3course.name,
+            "Link": e3course.url,
+            "catalog" : e3course.catalog,
+            "Type" : e3course.type,
+            "SWS" :e3course.sws,
+            "Erwartete Teilnehmer" : e3course.num_expected_participants,
+            "Max. Teilnehmer" : e3course.max_participants,
+            "Credits" : e3course.credit,
+            "Language" : e3course.language,
+            "Description" :e3course.description,
+            "Times_manual" :e3course.time_manual,
+            "Location" :e3course.location ,
+            "Exam" :  e3course.exam_type,
+            "Ausgeschlossen_Ingenieurwissenschaften_Bachelor" : e3course.ausgeschlossen_ingenieurwissenschaften_bachelor,
+            "fairness" : e3rating.fairness,
+            "support": e3rating.support,
+            "material": e3rating.material,
+            "fun": e3rating.fun,
+            "comprehensibility": e3rating.comprehensibility,
+            "interesting": e3rating.interesting,
+            "grade_effort": e3rating.grade_effort
+        })
+    return jsonify(response)
+
+
+
+
+
+
+    
+   
 
 

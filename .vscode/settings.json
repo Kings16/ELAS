@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "./backend/orm_interface"
-    ]
+    ],
+    "python.formatting.provider": "black"
 }
