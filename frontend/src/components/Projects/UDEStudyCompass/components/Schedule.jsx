@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ViewState,
   EditingState,
@@ -11,7 +11,7 @@ import {
   AppointmentForm,
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { useState } from "react";
+import { Paper } from "@material-ui/core";
 
 const schedulerData = [
   {
@@ -62,7 +62,7 @@ const Schedule = () => {
   };
 
   return (
-    <>
+    <Paper>
       <Scheduler data={currentSchedule}>
         <ViewState />
         <EditingState />
@@ -72,7 +72,7 @@ const Schedule = () => {
         <AppointmentTooltip showCloseButton showOpenButton />
         <AppointmentForm readOnly />
       </Scheduler>
-    </>
+    </Paper>
   );
 };
 
