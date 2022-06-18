@@ -14,6 +14,7 @@ import Footer from "./Website/Footer/Footer";
 import Admin from "./Website/Admin/Admin";
 import Registration from "./Website/Registration/Registration";
 import UDERecommender from "./Projects/UDERecommender/UDERecommender";
+import UDEStudyCompass from "./Projects/UDEStudyCompass/UDEStudyCompass";
 
 const useStyles = makeStyles((theme) => ({
   containerHeader: {
@@ -70,6 +71,11 @@ export default function App() {
             exact
             path="/ude-recommender"
             render={() => <UDERecommender classes={classes} />}
+          />
+          <Route
+            exact
+            path="/ude-studycompass"
+            render={() => <UDEStudyCompass />}
           />
 
           {!isLoggedIn ? (
