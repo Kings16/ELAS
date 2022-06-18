@@ -1,5 +1,6 @@
 import { Grid, Typography } from "@material-ui/core";
 import React, { useEffect } from "react";
+import Schedule from "./components/Schedule";
 
 const UDEStudyCompass = () => {
   useEffect(() => {
@@ -18,6 +19,14 @@ const UDEStudyCompass = () => {
         <Typography variant="h2" align="center">
           New StudyCompass Homepage
         </Typography>
+        <Grid container>
+          <Grid item xs={4}>
+            {/* TODO: Your new left side components here */}
+          </Grid>
+          <Grid item xs={8}>
+            {/* TODO: Your new right side components here */}
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xs={0} md={1} />
     </Grid>
