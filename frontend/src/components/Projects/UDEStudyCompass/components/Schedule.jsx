@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ViewState,
   EditingState,
@@ -11,64 +11,41 @@ import {
   AppointmentForm,
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
+import { useState } from "react";
 
 const schedulerData = [
   {
-    startDate: "2022-06-21T09:45",
-    endDate: "2022-06-21T11:00",
+    id: 1,
+    startDate: new Date("2022-06-21T09:45"),
+    endDate: new Date("2022-06-21T11:00"),
     title: "Course 1",
-    color: "red",
+    color: "green",
   },
   {
-    startDate: "2022-06-21T09:45",
-    endDate: "2022-06-21T12:00",
+    id: 2,
+    startDate: new Date("2022-06-21T09:45"),
+    endDate: new Date("2022-06-21T12:00"),
     title: "Course 2",
-    color: "red",
+    color: "green",
   },
   {
-    startDate: "2022-06-21T08:45",
-    endDate: "2022-06-21T09:45",
+    id: 3,
+    startDate: new Date("2022-06-21T08:45"),
+    endDate: new Date("2022-06-21T09:45"),
     title: "Course 3",
     color: "green",
   },
 ];
 
 const Schedule = () => {
-  const overlapping = (a, b) => {
-    if (
-      (a.startDate >= b.startDate && a.startDate < b.endDate) ||
-      (a.endDate > b.startDate && a.endDate < b.endDate)
-    ) {
-      return true;
-    }
-  };
+  const [currentSchedule, setCurrentSchedule] = useState(undefined);
 
-  const isOverlapping = (arr) => {
-    let conflicts = [];
-    arr.forEach((arr1) => {
-      arr.forEach((arr2) => {
-        if (arr1.id !== arr2.id) {
-          if (overlapping(arr1, arr2)) {
-            if (
-              !conflicts.some((date) => (date.id === arr1.id ? true : false))
-            ) {
-              conflicts.push({ id: arr1.id });
-            }
-          }
-        }
-      });
-    });
-    let newSchedule = arr;
-    conflicts.forEach((conflict) => {
-      let objIndex = newSchedule.findIndex((obj) => obj.id === conflict.id);
-      newSchedule[objIndex].color = "red";
-    });
-
-    return newSchedule;
-  };
+  useEffect(() => {
+    const updateSchedule = isOverlapping(schedulerData);
+    setCurrentSchedule(updateSchedule);
+  }, [currentSchedule]);
 
   const Appointment = ({ children, style, ...restProps }) => {
-    console.log(restProps);
     return (
       <Appointments.Appointment
         {...restProps}
@@ -86,7 +63,7 @@ const Schedule = () => {
 
   return (
     <>
-      <Scheduler data={schedulerData}>
+      <Scheduler data={currentSchedule}>
         <ViewState />
         <EditingState />
         <IntegratedEditing />
@@ -97,6 +74,37 @@ const Schedule = () => {
       </Scheduler>
     </>
   );
+};
+
+const overlapping = (a, b) => {
+  if (
+    (a.startDate >= b.startDate && a.startDate < b.endDate) ||
+    (a.endDate > b.startDate && a.endDate < b.endDate)
+  ) {
+    return true;
+  }
+};
+
+const isOverlapping = (arr) => {
+  let conflicts = [];
+  arr.forEach((arr1) => {
+    arr.forEach((arr2) => {
+      if (arr1.id !== arr2.id) {
+        if (overlapping(arr1, arr2)) {
+          if (!conflicts.some((date) => (date.id === arr1.id ? true : false))) {
+            conflicts.push({ id: arr1.id });
+          }
+        }
+      }
+    });
+  });
+  let newSchedule = arr;
+  conflicts.forEach((conflict) => {
+    let objIndex = newSchedule.findIndex((obj) => obj.id === conflict.id);
+    newSchedule[objIndex].color = "red";
+  });
+
+  return newSchedule;
 };
 
 export default Schedule;
