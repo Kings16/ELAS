@@ -25,6 +25,7 @@ const UDEStudyCompass = () => {
           </Grid>
           <Grid item xs={8}>
             {/* TODO: Your new right side components here */}
+            {/* <Schedule /> */}
           </Grid>
         </Grid>
       </Grid>

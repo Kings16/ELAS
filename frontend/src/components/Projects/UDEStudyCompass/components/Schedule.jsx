@@ -15,19 +15,19 @@ import {
 const schedulerData = [
   {
     startDate: "2022-06-21T09:45",
-    endDate: "2022-06-14T11:00",
+    endDate: "2022-06-21T11:00",
     title: "Course 1",
     color: "red",
   },
   {
     startDate: "2022-06-21T09:45",
-    endDate: "2022-06-14T12:00",
+    endDate: "2022-06-21T12:00",
     title: "Course 2",
     color: "red",
   },
   {
     startDate: "2022-06-21T08:45",
-    endDate: "2022-06-14T09:45",
+    endDate: "2022-06-21T09:45",
     title: "Course 3",
     color: "green",
   },
