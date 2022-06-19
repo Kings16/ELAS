@@ -11,7 +11,7 @@ import {
   AppointmentForm,
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { Paper } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@material-ui/core";
 
 const schedulerData = [
   {
@@ -54,7 +54,7 @@ const Schedule = () => {
           backgroundColor: restProps.data.color,
           borderRadius: "6px",
         }}
-        onClick={() => console.log("click")}
+        onClick={() => console.log(`You clicked on ${restProps.data.title}`)}
       >
         {children}
       </Appointments.Appointment>
@@ -62,17 +62,32 @@ const Schedule = () => {
   };
 
   return (
-    <Paper>
-      <Scheduler data={currentSchedule}>
-        <ViewState />
-        <EditingState />
-        <IntegratedEditing />
-        <WeekView startDayHour={7.5} endDayHour={17.5} excludedDays={[0, 6]} />
-        <Appointments appointmentComponent={Appointment} />
-        <AppointmentTooltip showCloseButton showOpenButton />
-        <AppointmentForm readOnly />
-      </Scheduler>
-    </Paper>
+    <Grid container spacing={1}>
+      <Grid item xs={8}>
+        <Paper>
+          <Scheduler data={currentSchedule}>
+            <ViewState />
+            <EditingState />
+            <IntegratedEditing />
+            <WeekView
+              startDayHour={7.5}
+              endDayHour={17.5}
+              excludedDays={[0, 6]}
+            />
+            <Appointments appointmentComponent={Appointment} />
+            <AppointmentTooltip showCloseButton showOpenButton />
+            {/* <AppointmentForm readOnly /> */}
+          </Scheduler>
+        </Paper>
+      </Grid>
+      <Grid item xs={4}>
+        <Paper style={{ height: "50vh", padding: 16 }}>
+          <Typography variant="h6" color="textSecondary">
+            Conflicted schedule
+          </Typography>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
