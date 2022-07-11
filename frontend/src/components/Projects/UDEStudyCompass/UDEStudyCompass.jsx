@@ -1,4 +1,10 @@
-import { Button, Grid, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  Typography,
+  Snackbar,
+  SnackbarContent,
+} from "@material-ui/core";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import React, { useEffect, useState } from "react";
@@ -38,9 +44,12 @@ const useStyles = makeStyles((theme) => ({
 const UDEStudyCompass = () => {
   const [studyPrograms, setStudyprograms] = useState("");
   const [lectures, setLectures] = useState([]);
-  const [addedCourses, setAddedCourses] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [historyClicked, setHistoryClicked] = useState(false);
-  const [filteredCourses, setFilteredCourses] = useState(lectures)
+  const [filteredCourses, setFilteredCourses] = useState(lectures);
+  const [filterPorcessed, setFilterPorcessed] = useState(true);
+  const [isOverlapping, setIsOverlapping] = useState(false);
+  const [hoursWeekly, setHoursWeekly] = useState(0);
   const handleHostoryToggle = () => {
     setHistoryClicked(!historyClicked);
   };
@@ -51,23 +60,35 @@ const UDEStudyCompass = () => {
     });
   }, []);
 
-  useEffect(() =>{
-    return () => {};
-  },[filteredCourses]);
-  
-  const getCoursesByIds = (filteredCoursesIds) =>{
-    console.log("getCoursesByIds erreicht!")
-    let filteredCourses =[];
-    for (let lecture of lectures){
-      if (filteredCoursesIds.includes(lecture.id) && ! addedCourses.includes(lecture) ){
-        filteredCourses.push(lecture)
+  //These useEffects are needed to rerender the Courses in Realtime (if filteredCourses is change it will not render and then render again with the Condition for the filteredCourses.map-function in the return Statement)
+  useEffect(() => {
+    if (filterPorcessed === false) {
+      setFilterPorcessed(true);
+    }
+  }, [filterPorcessed]);
+
+  useEffect(() => {
+    setFilterPorcessed(false);
+  }, [filteredCourses]);
+
+  ////////////////////
+  //This function is needed to set the filteredCourses-State
+  const getCoursesByIds = (filteredCoursesIds) => {
+    console.log("getCoursesByIds erreicht!");
+    let filteredCourses = [];
+
+    for (let lecture of lectures) {
+      if (
+        filteredCoursesIds.includes(lecture.id) &&
+        !selectedCourses.includes(lecture)
+      ) {
+        filteredCourses.push(lecture);
       }
     }
-    setFilteredCourses (filteredCourses);
-    console.log("filteredCourses:", filteredCourses)
+    setFilteredCourses(filteredCourses);
+    console.log("filteredCourses:", filteredCourses);
     //setFilterPorcessed(true);
-    
-  }
+  };
 
   ///////////the method helps to get lecture data from the child component of homepage
   ///it also modifies the recieved data by adding field 'isSelected'. needed for removing element on click
@@ -81,56 +102,164 @@ const UDEStudyCompass = () => {
   ///////the method removes course from the list of courses and add it to another list
   //which is then used for data representation in the selected courses
   const handleAddCoursesById = (courseId) => {
+    console.log("courseId used to added to SelectedCourses:", courseId);
+    let tempSelectedCourses = selectedCourses;
+    let totals = hoursWeekly;
     for (let lecture of lectures) {
       if (lecture.id === courseId) {
         lecture.isSelected = true;
+        tempSelectedCourses.push(lecture);
+        totals = hoursWeekly + parseInt(lecture.sws);
         const lecturesAfterRemove = lectures.filter((el) => el.id !== courseId);
-        //setLectures(lecturesAfterRemove);
-        setAddedCourses([...addedCourses, lecture]);
+        setLectures(lecturesAfterRemove);
       }
     }
+    setHoursWeekly(totals);
+    console.log("Total SWSs: ", hoursWeekly);
+    console.log("tempSelectedCourses  added from Courses", tempSelectedCourses);
+    setSelectedCourses(tempSelectedCourses);
+    console.log("selectedCourses after added from Courses", selectedCourses);
   };
 
-  ////////////////////////////////////////////
+  //////////////////////////////////////////// not in use by anything
 
-  const handRemoveCourseFromHistoryById = (courseId) => {
-    for (let lecture of lectures) {
-      if (lecture.id === courseId) {
-        setAddedCourses([...addedCourses, lecture]);
-        const newHistoryafterRemove = historyCourses.filter(
-          (el) => el.id !== courseId
-        );
-        setHistoryCourses(newHistoryafterRemove);
-      }
-    }
-  };
+  // const handRemoveCourseFromHistoryById = (courseId) => {
+  //   for (let lecture of lectures) {
+  //     if (lecture.id === courseId) {
+  //       setSelectedCourses([...selectedCourses, lecture]);
+  //       const newHistoryafterRemove = selectedCoursesHistory.filter(
+  //         (el) => el.id !== courseId
+  //       );
+  //       setSelectedCoursesHistory(newHistoryafterRemove);
+  //     }
+  //   }
+  // };
   ///removes courses from selected Courses and add it back the main course component
-  const [historyCourses, setHistoryCourses] = useState([]);
-  const handRemoveCourseById = (courseId) => {
-    for (let lecture of lectures) {
-      if (lecture.id === courseId) {
-        lecture.isSelected = false;
-      }
-    }
-    for (let lecture of addedCourses) {
-      if (lecture.id === courseId) {
-        setHistoryCourses([...historyCourses, lecture]);
-        const lecturesAfterRemove = addedCourses.filter(
-          (el) => el.id !== courseId
-        );
-        setAddedCourses(lecturesAfterRemove);
-      }
-    }
-    console.log("History");
-    console.log(historyCourses);
-  };
+  const [selectedCoursesHistory, setSelectedCoursesHistory] = useState([]);
+  // const handRemoveCourseById = (courseId) => {
+  //   for (let lecture of lectures) {
+  //     if (lecture.id === courseId) {
+  //       lecture.isSelected = false;
+  //     }
+  //   }
+  //   for (let lecture of selectedCourses) {
+  //     if (lecture.id === courseId) {
+  //       setSelectedCoursesHistory([...selectedCoursesHistory, lecture]);
+  //       // const lecturesAfterRemove = selectedCourses.filter(
+  //       //   (el) => el.id !== courseId
+  //       // );
+  //       // setSelectedCourses(lecturesAfterRemove);
+  //     }
+  //   }
+  //   console.log("History");
+  //   console.log(selectedCoursesHistory);
+  // };
   const clearHistory = () => {
-    setHistoryCourses([]);
+    setSelectedCoursesHistory([]);
   };
   /////////////////
 
   const [showSchedule, setShowSchedule] = useState(false);
+  // const of Snackbar
+  const [snackPack, setSnackPack] = useState([]);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [messageInfo, setMessageInfo] = useState(undefined);
+  const [lastCourseSwapped, setLastCourseSwapped] = useState(undefined);
+  //React to handling Changes for Snackbar
+  React.useEffect(() => {
+    if (snackPack.length && !messageInfo) {
+      // Set a new snack when we don't have an active one
+      setMessageInfo({ ...snackPack[0] });
+      setSnackPack((prev) => prev.slice(1));
+      setOpenSnackBar(true);
+    } else if (snackPack.length && messageInfo && openSnackBar) {
+      // Close an active snack when a new one is added
+      setOpenSnackBar(false);
+    }
+  }, [snackPack, messageInfo, openSnackBar]);
+  const handleRemoval = (selectedCourse) => {
+    setOpenSnackBar(true);
+    if (selectedCourse.selected === true) {
+      let message = "Selected course restored";
 
+      console.log(message);
+      setMessageInfo(true);
+      setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+      setLastCourseSwapped(selectedCourse);
+    } else {
+      let message = "Selected course removed";
+      console.log(message);
+      setMessageInfo(true);
+      setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+      setLastCourseSwapped(selectedCourse);
+    }
+  };
+  const handleUndo = (messageInfo) => {
+    console.log("messageInfo:", messageInfo);
+    console.log("message:", messageInfo.message);
+    console.log("lastCourseSwapped", lastCourseSwapped);
+    if (
+      lastCourseSwapped !== undefined &&
+      messageInfo.message === "Selected course removed"
+    ) {
+      console.log("Back to Selected");
+
+      addCourseToSelected(lastCourseSwapped);
+      setOpenSnackBar(false);
+    }
+    if (
+      lastCourseSwapped !== undefined &&
+      messageInfo.message === "Selected course removed"
+    ) {
+      console.log("Back to History");
+      addCourseToHistory(lastCourseSwapped);
+      setOpenSnackBar(false);
+    }
+  };
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+  const handleExited = () => {
+    setMessageInfo(undefined);
+  };
+
+  //////Functions to use for SelecedCourseCard handling
+  const addCourseToSelected = (course) => {
+    //tempöräre Liste erschaffen die gleich den selectedCourses ist
+    let temp = selectedCourses;
+    console.log("Course added to selected", course);
+    course.isSelected = true;
+    //Den Course in selectedCourses pushen
+    /*check if it's already in */
+    if (temp.every((c) => c.id !== course.id)) {
+      temp.push(course);
+    }
+    console.log("selectedCoursesHistory:", temp);
+    setSelectedCourses(temp);
+    let filteredCourses = selectedCoursesHistory.filter(
+      (c) => c.id !== course.id
+    );
+    setSelectedCoursesHistory(filteredCourses);
+    console.log("selectedCoursesHistory:", filteredCourses);
+    setHoursWeekly(hoursWeekly + parseInt(course.sws));
+    handleRemoval("Seleced Course restored");
+  };
+  const addCourseToHistory = (course) => {
+    let temp = selectedCoursesHistory;
+    course.isSelected = false;
+    console.log("Course added to history", course);
+    temp.unshift(course);
+    console.log("selectedCoursesHistory: ", temp);
+    setSelectedCoursesHistory(temp);
+    let filteredCourses = selectedCourses.filter((c) => c.id !== course.id);
+    setSelectedCourses(filteredCourses);
+    console.log("selectedCourses:", filteredCourses);
+    setHoursWeekly(hoursWeekly - parseInt(course.sws));
+    handleRemoval("Selected Course removed");
+  };
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -140,18 +269,18 @@ const UDEStudyCompass = () => {
 
   ////Modal Properties here
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [openDialogeToChangeStudyprogram, setOpenDialogeToChangeStudyprogram] =
+    React.useState(false);
 
   const handleOpen = () => {
-    setOpen(true);
+    setOpenDialogeToChangeStudyprogram(true);
   };
-
   const handleClose = () => {
-    setOpen(false);
+    setOpenDialogeToChangeStudyprogram(false);
   };
   const handleBackSelectedPage = () => {
     setLectures([]);
-    setAddedCourses([]);
+    setSelectedCourses([]);
     handleClose([]);
   };
 
@@ -211,24 +340,14 @@ const UDEStudyCompass = () => {
                       Compass
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    xs={2}
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justify="space-evenly"
-                  >
-                    <Grid item>
-                      <Typography>
-                        <IconButton onClick={handleOpen}>
-                          <BorderColorIcon />
-                        </IconButton>
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography>change study program</Typography>
-                    </Grid>
+
+                  <Grid item>
+                    <Typography>
+                      <Button onClick={handleOpen}>
+                        <BorderColorIcon />
+                        change study program
+                      </Button>
+                    </Typography>
                   </Grid>
                 </Grid>
                 <Grid
@@ -243,8 +362,8 @@ const UDEStudyCompass = () => {
                     container
                     direction="column"
                     justifyContent="flex-start"
-                    //alignItems="center"
                     spacing={4}
+                    //alignItems="center"
                   >
                     <Grid item container direction="row" spacing={1}>
                       <Grid item>
@@ -252,7 +371,10 @@ const UDEStudyCompass = () => {
                       </Grid>
                       <Grid item>
                         {" "}
-                        <SemesterOverviewCard />
+                        <SemesterOverviewCard
+                          hoursWeekly={hoursWeekly}
+                          isOverlapping={isOverlapping}
+                        />
                       </Grid>
                     </Grid>
                     <Grid
@@ -269,9 +391,6 @@ const UDEStudyCompass = () => {
                         alignItems="center"
                         justify="space-evenly"
                       >
-                        <Grid item xs={7}>
-                          <Typography>Selected Courses</Typography>
-                        </Grid>
                         <Grid
                           item
                           xs={5}
@@ -281,6 +400,42 @@ const UDEStudyCompass = () => {
                           onClick={handleHostoryToggle}
                         >
                           {!historyClicked ? (
+                            <Typography variant="body2">
+                              Selected Cousres:
+                            </Typography>
+                          ) : (
+                            <Typography variant="body2">History: </Typography>
+                          )}
+                        </Grid>
+                        <Grid item>
+                          <Button
+                            aria-label="history"
+                            style={{ color: "orange" }}
+                          >
+                            {!historyClicked ? (
+                              <HistoryIcon
+                                style={{ color: "orange" }}
+                                onClick={() =>
+                                  setHistoryClicked(!historyClicked)
+                                }
+                              ></HistoryIcon>
+                            ) : (
+                              <FormatListBulletedIcon
+                                style={{ color: "orange" }}
+                                onClick={() => {
+                                  setHistoryClicked(!historyClicked);
+                                }}
+                              ></FormatListBulletedIcon>
+                            )}
+                            <Typography
+                              onClick={() => setHistoryClicked(!historyClicked)}
+                            >
+                              {!historyClicked ? "History" : "Selected Courses"}
+                            </Typography>
+                          </Button>
+                        </Grid>
+                        <Grid item>
+                          {/* {!historyClicked ? (
                             <Grid container direction="row" alignItems="center">
                               <Grid item XS={1}>
                                 <IconButton>
@@ -307,7 +462,7 @@ const UDEStudyCompass = () => {
                               </Grid>
                               <Grid container direction="row">
                                 <Grid item></Grid>
-                                {historyCourses.length > 0 ? (
+                                {selectedCoursesHistory.length > 0 ? (
                                   <Grid item>
                                     <IconButton onClick={clearHistory}>
                                       <Typography
@@ -325,14 +480,48 @@ const UDEStudyCompass = () => {
                                 )}
                               </Grid>
                             </>
-                          )}
+                          )} */}
                         </Grid>
                       </Grid>
-                      {!historyClicked ? (
-                        addedCourses.length !== 0 ? (
+                      <Grid container direction="column" spacing={2}>
+                        {historyClicked ? (
+                          selectedCoursesHistory.length !== 0 ? (
+                            selectedCoursesHistory.map((course) => (
+                              <Grid item>
+                                <SelectedCoursesCard
+                                  selectedCourse={course}
+                                  addCourseToOtherList={addCourseToSelected}
+                                  handleRemoval={handleRemoval}
+                                />
+                              </Grid>
+                            ))
+                          ) : (
+                            <Grid item>
+                              <Typography
+                                variant="h4"
+                                style={{ color: "#9e9e9e", padding: "30px" }}
+                              >
+                                Course History is Empty
+                              </Typography>
+                            </Grid>
+                          )
+                        ) : (
+                          selectedCourses.map((course) => (
+                            <Grid item>
+                              <SelectedCoursesCard
+                                selectedCourse={course}
+                                addCourseToOtherList={addCourseToHistory}
+                                handleRemoval={handleRemoval}
+                              />
+                            </Grid>
+                          ))
+                        )}
+                      </Grid>
+                      {/* {!historyClicked ? (
+                        selectedCourses.length !== 0 ? (
                           <>
                             {" "}
-                            {addedCourses.map((selectedCourse) => (
+                            {selectedCourses.map((selectedCourse) => (
                               <Grid item xs={12}>
                                 <SelectedCourse2
                                   selectedCourse={selectedCourse}
@@ -353,9 +542,9 @@ const UDEStudyCompass = () => {
                         )
                       ) : (
                         <>
-                          {historyCourses.length !== 0 ? (
+                          {selectedCoursesHistory.length !== 0 ? (
                             <>
-                              {historyCourses.map((selectedCourse) => (
+                              {selectedCoursesHistory.map((selectedCourse) => (
                                 <Grid item xs={12}>
                                   <SelectedCourse2
                                     selectedCourse={selectedCourse}
@@ -379,12 +568,15 @@ const UDEStudyCompass = () => {
                             </Grid>
                           )}
                         </>
-                      )}
+                      )} */}
                     </Grid>
                   </Grid>
                   <Grid item xs={8} container direction="row" spacing={0}>
                     <Grid item xs={12}>
-                      <StudyCompassFilters studyprogram={lectures} getCoursesByIds={getCoursesByIds}/>
+                      <StudyCompassFilters
+                        studyprogram={lectures}
+                        getCoursesByIds={getCoursesByIds}
+                      />
                     </Grid>
                     <Grid
                       item
@@ -406,24 +598,31 @@ const UDEStudyCompass = () => {
                         alignItems="center"
                         justify="space-evenly"
                       >
-                        {filteredCourses.map((filteredCourse) => (
-                          <Grid item xs={12}>
-                            <Course
-                            studyprogram={filteredCourse}
-                            handleAddById={handleAddCoursesById}
-                          />
-                          </Grid>
-                        ))
-                    // :
+                        {filterPorcessed
+                          ? filteredCourses.map((filteredCourse) => {
+                              return (
+                                <Grid item xs={12}>
+                                  <Course
+                                    studyprogram={filteredCourse}
+                                    handleAddById={handleAddCoursesById}
+                                  />
+                                </Grid>
+                              );
+                            })
+                          : null}
+
+                        {
+                          /* // :
                     // lectures.map((studyprogram) => (
                     //   <Grid item xs={12}>
                     //     <Course
                     //       studyprogram={studyprogram}
-                    //       handleAddById={handleAddCoursesById}
+                    //       handleAddById={/*handleAddCoursesById}
                     //     />
                     //   </Grid>
                     // ))
-                     /*  /////////////to here */ 
+                     /*  /////////////to here */
+                          //    */
                         }
                       </Grid>
                     </Grid>
@@ -439,7 +638,7 @@ const UDEStudyCompass = () => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         className={classes.modal}
-        open={open}
+        open={openDialogeToChangeStudyprogram}
         onClose={handleClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -447,7 +646,7 @@ const UDEStudyCompass = () => {
           timeout: 500,
         }}
       >
-        <Fade in={open}>
+        <Fade in={openDialogeToChangeStudyprogram}>
           <Grid className={classes.paper}>
             <Grid item>
               <Typography variant="h5" style={{ fontWeight: "100px" }}>
@@ -494,6 +693,49 @@ const UDEStudyCompass = () => {
           </Grid>
         </Fade>
       </Modal>
+      <Snackbar
+        textColour="orange"
+        bodyStyle={{ color: "orange" }}
+        style={{ color: "orange" }}
+        key={messageInfo ? messageInfo.key : undefined}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        openDialogeToChangeStudyprogram={openDialogeToChangeStudyprogram}
+        autoHideDuration={7000}
+        onClose={handleClose}
+        onExited={handleExited}
+      >
+        <SnackbarContent
+          message={messageInfo ? messageInfo.message : undefined}
+          action={
+            <React.Fragment>
+              <Button
+                color="inherit"
+                size="small"
+                onClick={
+                  //handleClose
+                  /*not working because I can't access the message
+                    {messageInfo.message} === "Selected course removed"
+                      ? handleUndoToSelect()
+                      : message === "Selected course removed"
+                      ? handleUndoToHistory()
+                      : setMessageInfo(false)
+                    */
+                  //this is also not working because I can't access the message
+                  handleUndo({ messageInfo })
+                }
+              >
+                UNDO
+              </Button>
+            </React.Fragment>
+          }
+          style={{
+            backgroundColor: "orange",
+          }}
+        />
+      </Snackbar>
     </>
   );
 };
