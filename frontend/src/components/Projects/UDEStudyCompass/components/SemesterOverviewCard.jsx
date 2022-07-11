@@ -44,10 +44,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SemesterOverviewCard = (props) => {
-  //const { hoursWeekly, isOverlapping } = props;
+  const { hoursWeekly, isOverlapping } = props;
   const classes = useStyles();
-  const [isOverlapping, setIsOverlapping] = useState(false);
-  const [hoursWeekly, setHoursWeekly] = useState(6);
 
   return (
     <Card className={classes.root}>

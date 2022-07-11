@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Grid,
@@ -184,12 +184,7 @@ const Course = (props) => {
   //All necessary destructuring
 
   const [studyprogram, setStudyProgram] = useState(props.studyprogram);
-  /////////////New Code for Filters added in UDEStudyCompass for Kingston
-  useEffect(() =>{
-    return () => {};
-  },[studyprogram]);
-  /////////////
-  
+
   
   const {
     id,
